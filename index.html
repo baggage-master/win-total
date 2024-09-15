@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Win Probability Calculator</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js" defer></script>
+
+    <style>
+        /* Make sure the canvas doesn't expand beyond its defined width */
+        #histogram {
+            max-width: 300px;
+            max-height: 300px;
+            width: 100%;
+            height: auto;
+            margin: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body onload="generateInputs()">
+    <h1>Team Win Probability Calculator</h1>
+
+    <label for="numGames">Number of Games:</label>
+    <select id="numGames" onchange="generateInputs()">
+        <!-- Options for number of games, from 1 to 25 -->
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="11">11</option>
+        <option value="12" selected>12</option> <!-- Proper placement for 12 games -->
+        <option value="13">13</option>
+        <option value="14">14</option>
+        <option value="15">15</option>
+        <option value="16">16</option>
+        <option value="17">17</option>
+        <option value="18">18</option>
+        <option value="19">19</option>
+        <option value="20">20</option>
+        <option value="21">21</option>
+        <option value="22">22</option>
+        <option value="23">23</option>
+        <option value="24">24</option>
+        <option value="25">25</option>
+    </select>
+
+    <!-- This is where the form inputs will be dynamically generated -->
+    <div id="gameInputs"></div>
+
+    <!-- Button to calculate probabilities and generate the histogram -->
+    <button onclick="calculateProbabilities()">Calculate</button>
+
+    <!-- Button to reset all inputs and start over -->
+    <button onclick="startOver()">Start Over</button>
+
+    <!-- Button to clear probabilities and reset to 0.5 -->
+    <button onclick="clearProbabilities()">Clear Probabilities</button>
+
+    <!-- Canvas element where the histogram will be drawn -->
+    <canvas id="histogram"></canvas>
+
+</body>
+</html>
