@@ -10,8 +10,8 @@
     <style>
         /* Make sure the canvas doesn't expand beyond its defined width */
         #histogram {
-            max-width: 300px;
-            max-height: 300px;
+            max-width: 500px;
+            max-height: 500px;
             width: 100%;
             height: auto;
             margin: auto;
@@ -67,5 +67,11 @@
     <!-- Canvas element where the histogram will be drawn -->
     <canvas id="histogram"></canvas>
 
+    <!-- Display the text report -->
+    <h2>Win Probability Report</h2>
+    <pre id="reportOutput"></pre>
+
+    <!-- Button to copy the report to clipboard -->
+    <button onclick="copyToClipboard()">Copy Report to Clipboard</button>
 </body>
 </html>
