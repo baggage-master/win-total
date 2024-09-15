@@ -62,6 +62,7 @@ function calculateProbabilities() {
     }
 
     generateHistogram(winCounts);
+    generateReport(winCounts, numGames);
 }
 
 function generateHistogram(winCounts) {
@@ -92,6 +93,27 @@ function generateHistogram(winCounts) {
                 }
             }
         }
+    });
+}
+
+// Function to generate the text report
+function generateReport(winCounts, numGames) {
+    let report = 'Number of Wins - Exactly - At Least\n\n';
+    let cumulativeProbability = 0;
+    
+    for (let i = numGames; i >= 0; i--) {
+        cumulativeProbability += winCounts[i];
+        report += `${i} Wins: ${(winCounts[i] * 100).toFixed(2)}% - ${(cumulativeProbability * 100).toFixed(2)}%\n`;
+    }
+    
+    document.getElementById('reportOutput').textContent = report;
+}
+
+// Function to copy the report to the clipboard
+function copyToClipboard() {
+    const reportText = document.getElementById('reportOutput').textContent;
+    navigator.clipboard.writeText(reportText).then(() => {
+        alert("Report copied to clipboard!");
     });
 }
 
