@@ -1,6 +1,6 @@
 let chartInstance = null;
 
-// Build the inputs (includes Team Rating and Spread display)
+// -------- Build Inputs (with Team Rating + Spread input) --------
 function generateInputs() {
   const numGames = parseInt(document.getElementById('numGames').value, 10);
   const gameInputs = document.getElementById('gameInputs');
@@ -44,8 +44,8 @@ function generateInputs() {
           <label for="oppRating${i}">Team Rating:</label>
           <input type="number" id="oppRating${i}" step="0.1" placeholder="e.g., 82.4">
 
-          <span>Spread:</span>
-          <span id="spread${i}" class="spread-chip"></span>
+          <label for="spread${i}">Spread:</label>
+          <input type="number" id="spread${i}" step="0.1" placeholder="+/- pts">
         </div>
 
         <div class="loc-group" style="margin-top:6px;">
@@ -68,12 +68,12 @@ function generateInputs() {
   }
 }
 
-// Compute and display point spreads
-// Adjust HFA to home team, then Spread = OpponentAdjusted - YourAdjusted
-function updatePointSpreads() {
+// -------- Ratings → Spread (per game) --------
+// HFA goes to the HOME team only. Spread = OppAdj - YourAdj (positive = opponent favored)
+function updateSpreadsFromRatings() {
   const numGames = parseInt(document.getElementById('numGames').value, 10);
   const your = parseFloat(document.getElementById('yourTeamRating').value);
-  const hfa = parseFloat(document.getElementById('homeFieldAdv').value);
+  const hfa  = parseFloat(document.getElementById('homeFieldAdv').value);
 
   if (isNaN(your) || isNaN(hfa)) {
     alert('Please enter BOTH "Your Team Rating" and "Home Field Advantage" first.');
@@ -86,23 +86,48 @@ function updatePointSpreads() {
     const loc = locEl ? locEl.value : 'neutral';
     const spreadEl = document.getElementById(`spread${i}`);
 
-    if (isNaN(opp)) { spreadEl.textContent = ''; spreadEl.title = ''; continue; }
+    if (isNaN(opp)) continue; // skip games without an opponent rating
 
     let yourAdj = your, oppAdj = opp;
     if (loc === 'home') yourAdj += hfa;
     else if (loc === 'away') oppAdj += hfa;
 
-    const spread = oppAdj - yourAdj; // + = opponent favored
-    spreadEl.textContent = `${spread > 0 ? '+' : ''}${spread.toFixed(1)}`;
-    spreadEl.title = (loc === 'home')
-      ? `Your team HOME (+${hfa.toFixed(1)} HFA)`
-      : (loc === 'away')
-        ? `Opponent HOME (+${hfa.toFixed(1)} HFA)`
-        : `Neutral (no HFA)`;
+    const spread = oppAdj - yourAdj;
+    spreadEl.value = spread.toFixed(1);
   }
 }
 
-// ==== Existing probability machinery ====
+// -------- Spread → Probability (per game) --------
+// Normal:     Pwin = 1 - Phi(spread / sigma)
+// Logistic:   Pwin = 1 / (1 + exp(beta * spread))
+function updateProbabilitiesFromSpreads() {
+  const numGames = parseInt(document.getElementById('numGames').value, 10);
+  const model = document.getElementById('modelType').value;
+  const sigma = parseFloat(document.getElementById('sigma').value);
+  const beta  = parseFloat(document.getElementById('beta').value);
+
+  if (model === 'normal' && isNaN(sigma)) { alert('Enter σ for the Normal model.'); return; }
+  if (model === 'logistic' && isNaN(beta)) { alert('Enter b for the Logistic model.'); return; }
+
+  for (let i = 1; i <= numGames; i++) {
+    const spread = parseFloat(document.getElementById(`spread${i}`).value);
+    if (isNaN(spread)) continue; // skip if no spread
+
+    let p;
+    if (model === 'normal') {
+      const z = spread / sigma;
+      p = 1 - standardNormalCDF(z); // your team wins when margin < 0
+    } else {
+      p = 1 / (1 + Math.exp(beta * spread));
+    }
+
+    // clamp & write
+    p = Math.max(0, Math.min(1, p));
+    document.getElementById(`prob${i}`).value = p.toFixed(4);
+  }
+}
+
+// -------- Probability Engine (unchanged) --------
 function calculateProbabilities() {
   const numGames = parseInt(document.getElementById('numGames').value, 10);
   const probabilities = [];
@@ -156,8 +181,14 @@ function startOver() {
   const canvas = document.getElementById('histogram');
   canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
   if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+
+  // reset globals/model
   document.getElementById('yourTeamRating').value = '';
   document.getElementById('homeFieldAdv').value = '';
+  document.getElementById('modelType').value = 'normal';
+  document.getElementById('sigma').value = '13.5';
+  document.getElementById('beta').value  = '0.23';
+
   generateInputs();
 }
 
@@ -167,4 +198,20 @@ function clearProbabilities() {
   const canvas = document.getElementById('histogram');
   canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
   if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+}
+
+// -------- Math Helpers --------
+function standardNormalCDF(z) {
+  // Abramowitz & Stegun approximation via erf
+  return 0.5 * (1 + erf(z / Math.SQRT2));
+}
+function erf(x) {
+  // Numerical approximation of error function
+  const sign = x < 0 ? -1 : 1;
+  x = Math.abs(x);
+
+  const a1=0.254829592, a2=-0.284496736, a3=1.421413741, a4=-1.453152027, a5=1.061405429, p=0.3275911;
+  const t = 1.0 / (1.0 + p * x);
+  const y = 1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1) * t * Math.exp(-x*x);
+  return sign * y;
 }
