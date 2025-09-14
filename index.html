@@ -8,7 +8,6 @@
     <script src="script.js" defer></script>
 
     <style>
-        /* Make sure the canvas doesn't expand beyond its defined width */
         #histogram {
             max-width: 500px;
             max-height: 500px;
@@ -17,34 +16,50 @@
             margin: auto;
             display: block;
         }
-
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-
-        label {
-            font-weight: bold;
-        }
-
-        input[type="text"] {
-            width: 200px;
-            margin-right: 10px;
-        }
-
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        label { font-weight: bold; }
+        input[type="text"] { width: 200px; margin-right: 10px; }
+        input[type="number"] { width: 100px; }
         #gameInputs > div {
             margin-bottom: 12px;
             padding-bottom: 8px;
             border-bottom: 1px solid #ddd;
         }
+        .row-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .loc-group label { font-weight: normal; }
+        .spread-chip {
+            display: inline-block;
+            min-width: 60px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            border: 1px solid #ccc;
+            text-align: center;
+            font-weight: bold;
+            margin-left: 8px;
+        }
+        .controls { margin: 12px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+        .global-settings { margin: 16px 0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
     </style>
 </head>
 <body onload="generateInputs()">
     <h1>Team Win Probability Calculator</h1>
 
+    <div class="global-settings">
+        <div>
+            <label for="yourTeamRating">Your Team Rating:</label><br>
+            <input type="number" id="yourTeamRating" step="0.1" placeholder="e.g., 85">
+        </div>
+        <div>
+            <label for="homeFieldAdv">Home Field Advantage:</label><br>
+            <input type="number" id="homeFieldAdv" step="0.1" placeholder="e.g., 2.5">
+        </div>
+        <div style="align-self: flex-end;">
+            <button onclick="updatePointSpreads()">Update Point Spreads</button>
+        </div>
+    </div>
+
     <label for="numGames">Number of Games:</label>
     <select id="numGames" onchange="generateInputs()">
-        <!-- Options for number of games, from 1 to 25 -->
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="3">3</option>
@@ -59,7 +74,7 @@
         <option value="12">12</option>
         <option value="13">13</option>
         <option value="14">14</option>
-        <option value="15" selected>15</option> <!-- Default now set to 15 -->
+        <option value="15" selected>15</option>
         <option value="16">16</option>
         <option value="17">17</option>
         <option value="18">18</option>
@@ -72,22 +87,19 @@
         <option value="25">25</option>
     </select>
 
-    <!-- This is where the form inputs will be dynamically generated -->
     <div id="gameInputs"></div>
 
-    <!-- Buttons -->
-    <button onclick="calculateProbabilities()">Calculate</button>
-    <button onclick="startOver()">Start Over</button>
-    <button onclick="clearProbabilities()">Clear Probabilities</button>
+    <div class="controls">
+        <button onclick="calculateProbabilities()">Calculate</button>
+        <button onclick="startOver()">Start Over</button>
+        <button onclick="clearProbabilities()">Clear Probabilities</button>
+    </div>
 
-    <!-- Canvas element where the histogram will be drawn -->
     <canvas id="histogram"></canvas>
 
-    <!-- Display the text report -->
     <h2>Win Probability Report</h2>
     <pre id="reportOutput"></pre>
 
-    <!-- Button to copy the report to clipboard -->
     <button onclick="copyToClipboard()">Copy Report to Clipboard</button>
 </body>
 </html>
