@@ -5,25 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Team Win Probability Calculator</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- cache-bust so the new JS definitely loads -->
-  <script src="script.js?v=2" defer></script>
+  <!-- cache-bust to force the new JS to load -->
+  <script src="script.js?v=3" defer></script>
   <style>
-    #histogram{max-width:500px;max-height:500px;width:100%;height:auto;margin:auto;display:block}
-    body{font-family:Arial,sans-serif;margin:20px}
-    label{font-weight:bold}
-    input[type="text"]{width:220px;margin-right:10px}
-    input[type="number"]{width:110px}
-    #gameInputs>div{margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #ddd}
-    .row-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-    .loc-group label{font-weight:normal}
-    .spread-chip{display:inline-block;min-width:72px;padding:2px 8px;border-radius:12px;border:1px solid #ccc;text-align:center;font-weight:bold;margin-left:4px}
-    .controls{margin:12px 0;display:flex;gap:8px;flex-wrap:wrap}
-    .global-settings{margin:16px 0;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { margin-bottom: 8px; }
+    label { font-weight: bold; }
+    input[type="text"] { width: 220px; margin-right: 10px; }
+    input[type="number"] { width: 110px; }
+    #histogram { max-width: 500px; max-height: 500px; width: 100%; height: auto; margin: 20px auto; display: block; }
+    #gameInputs > div { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+    .row-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .loc-group label { font-weight: normal; }
+    .controls { margin: 12px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+    .global-settings, .model-settings { margin: 12px 0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .section-title { margin: 16px 0 4px; font-size: 1.05rem; font-weight: bold; }
   </style>
 </head>
 <body onload="generateInputs()">
   <h1>Team Win Probability Calculator</h1>
 
+  <div class="section-title">Global Ratings</div>
   <div class="global-settings">
     <div>
       <label for="yourTeamRating">Your Team Rating:</label><br>
@@ -34,7 +36,29 @@
       <input type="number" id="homeFieldAdv" step="0.1" placeholder="e.g., 2.5">
     </div>
     <div style="align-self:flex-end;">
-      <button onclick="updatePointSpreads()">Update Point Spreads</button>
+      <button onclick="updateSpreadsFromRatings()">Update Spreads from Ratings</button>
+    </div>
+  </div>
+
+  <div class="section-title">Spread → Probability Model</div>
+  <div class="model-settings">
+    <div>
+      <label for="modelType">Model:</label><br>
+      <select id="modelType">
+        <option value="normal" selected>Normal (σ)</option>
+        <option value="logistic">Logistic (b)</option>
+      </select>
+    </div>
+    <div id="sigmaWrap">
+      <label for="sigma">σ (points):</label><br>
+      <input type="number" id="sigma" step="0.1" value="13.5">
+    </div>
+    <div id="betaWrap">
+      <label for="beta">b (slope):</label><br>
+      <input type="number" id="beta" step="0.01" value="0.23">
+    </div>
+    <div style="align-self:flex-end;">
+      <button onclick="updateProbabilitiesFromSpreads()">Update Probabilities from Spreads</button>
     </div>
   </div>
 
@@ -52,6 +76,7 @@
     <option value="25">25</option>
   </select>
 
+  <!-- Dynamic per-game inputs -->
   <div id="gameInputs"></div>
 
   <div class="controls">
@@ -66,5 +91,19 @@
   <pre id="reportOutput"></pre>
 
   <button onclick="copyToClipboard()">Copy Report to Clipboard</button>
+
+  <script>
+    // simple show/hide of model params
+    document.addEventListener('DOMContentLoaded', () => {
+      const model = document.getElementById('modelType');
+      const sigmaWrap = document.getElementById('sigmaWrap');
+      const betaWrap  = document.getElementById('betaWrap');
+      const toggle = () => {
+        if (model.value === 'normal') { sigmaWrap.style.display='block'; betaWrap.style.display='none'; }
+        else { sigmaWrap.style.display='none'; betaWrap.style.display='block'; }
+      };
+      model.addEventListener('change', toggle); toggle();
+    });
+  </script>
 </body>
 </html>
