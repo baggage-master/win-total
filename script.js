@@ -1,10 +1,38 @@
 let chartInstance = null;
 
+/** ===============================
+ *  Weekly Prepopulation Block
+ *  (Update these numbers as needed)
+ *  =============================== */
+const PREPOP = {
+  homeFieldAdv: 5.54,
+  yourTeamRating: 87.01,
+  teamRatings: {
+    // Only teams you provided are prefilled. Others remain blank.
+    "Auburn": 82.53,
+    "Mississippi State": 73.11,
+    "Florida": 83.83,
+    "Arkansas": 80.45,
+    "LSU": 86.73,
+    "Missouri": 82.86,
+    "South Carolina": 80.05,
+    "Samford": 46.75,
+    "Texas": 88.36
+    // UTSA, Utah State, Notre Dame not provided -> left blank
+  }
+};
+
 // -------- Build Inputs (with Team Rating + Spread input) --------
 function generateInputs() {
   const numGames = parseInt(document.getElementById('numGames').value, 10);
   const gameInputs = document.getElementById('gameInputs');
   gameInputs.innerHTML = '';
+
+  // Prefill globals (only if empty, so we don't overwrite user edits)
+  const yourEl = document.getElementById('yourTeamRating');
+  const hfaEl  = document.getElementById('homeFieldAdv');
+  if (!yourEl.value && PREPOP.yourTeamRating != null) yourEl.value = PREPOP.yourTeamRating;
+  if (!hfaEl.value  && PREPOP.homeFieldAdv    != null) hfaEl.value  = PREPOP.homeFieldAdv;
 
   // 12 opponents
   const opponents12 = [
@@ -65,6 +93,12 @@ function generateInputs() {
         </div>
       </div>`;
     gameInputs.insertAdjacentHTML('beforeend', rowHtml);
+
+    // After inserting, prefill opponent rating if we have it (and only if empty)
+    if (opponentName && PREPOP.teamRatings[opponentName] != null) {
+      const oppInput = document.getElementById(`oppRating${i}`);
+      if (oppInput && !oppInput.value) oppInput.value = PREPOP.teamRatings[opponentName].toFixed(2);
+    }
   }
 }
 
@@ -127,7 +161,7 @@ function updateProbabilitiesFromSpreads() {
   }
 }
 
-// -------- Probability Engine (unchanged) --------
+// -------- Probability Engine --------
 function calculateProbabilities() {
   const numGames = parseInt(document.getElementById('numGames').value, 10);
   const probabilities = [];
@@ -182,9 +216,9 @@ function startOver() {
   canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
   if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
 
-  // reset globals/model
-  document.getElementById('yourTeamRating').value = '';
-  document.getElementById('homeFieldAdv').value = '';
+  // reset globals/model to PREPOP defaults (so refresh is easy each week)
+  document.getElementById('yourTeamRating').value = PREPOP.yourTeamRating ?? '';
+  document.getElementById('homeFieldAdv').value  = PREPOP.homeFieldAdv   ?? '';
   document.getElementById('modelType').value = 'normal';
   document.getElementById('sigma').value = '13.5';
   document.getElementById('beta').value  = '0.23';
