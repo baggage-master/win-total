@@ -17,6 +17,26 @@
             margin: auto;
             display: block;
         }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            width: 200px;
+            margin-right: 10px;
+        }
+
+        #gameInputs > div {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #ddd;
+        }
     </style>
 </head>
 <body onload="generateInputs()">
@@ -36,10 +56,10 @@
         <option value="9">9</option>
         <option value="10">10</option>
         <option value="11">11</option>
-        <option value="12" selected>12</option> <!-- Proper placement for 12 games -->
+        <option value="12">12</option>
         <option value="13">13</option>
         <option value="14">14</option>
-        <option value="15">15</option>
+        <option value="15" selected>15</option> <!-- Default now set to 15 -->
         <option value="16">16</option>
         <option value="17">17</option>
         <option value="18">18</option>
@@ -55,13 +75,9 @@
     <!-- This is where the form inputs will be dynamically generated -->
     <div id="gameInputs"></div>
 
-    <!-- Button to calculate probabilities and generate the histogram -->
+    <!-- Buttons -->
     <button onclick="calculateProbabilities()">Calculate</button>
-
-    <!-- Button to reset all inputs and start over -->
     <button onclick="startOver()">Start Over</button>
-
-    <!-- Button to clear probabilities and reset to 0.5 -->
     <button onclick="clearProbabilities()">Clear Probabilities</button>
 
     <!-- Canvas element where the histogram will be drawn -->
