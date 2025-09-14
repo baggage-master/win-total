@@ -1,105 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Win Probability Calculator</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="script.js" defer></script>
-
-    <style>
-        #histogram {
-            max-width: 500px;
-            max-height: 500px;
-            width: 100%;
-            height: auto;
-            margin: auto;
-            display: block;
-        }
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        label { font-weight: bold; }
-        input[type="text"] { width: 200px; margin-right: 10px; }
-        input[type="number"] { width: 100px; }
-        #gameInputs > div {
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #ddd;
-        }
-        .row-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-        .loc-group label { font-weight: normal; }
-        .spread-chip {
-            display: inline-block;
-            min-width: 60px;
-            padding: 2px 8px;
-            border-radius: 12px;
-            border: 1px solid #ccc;
-            text-align: center;
-            font-weight: bold;
-            margin-left: 8px;
-        }
-        .controls { margin: 12px 0; display: flex; gap: 8px; flex-wrap: wrap; }
-        .global-settings { margin: 16px 0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Team Win Probability Calculator</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- cache-bust so the new JS definitely loads -->
+  <script src="script.js?v=2" defer></script>
+  <style>
+    #histogram{max-width:500px;max-height:500px;width:100%;height:auto;margin:auto;display:block}
+    body{font-family:Arial,sans-serif;margin:20px}
+    label{font-weight:bold}
+    input[type="text"]{width:220px;margin-right:10px}
+    input[type="number"]{width:110px}
+    #gameInputs>div{margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid #ddd}
+    .row-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+    .loc-group label{font-weight:normal}
+    .spread-chip{display:inline-block;min-width:72px;padding:2px 8px;border-radius:12px;border:1px solid #ccc;text-align:center;font-weight:bold;margin-left:4px}
+    .controls{margin:12px 0;display:flex;gap:8px;flex-wrap:wrap}
+    .global-settings{margin:16px 0;display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+  </style>
 </head>
 <body onload="generateInputs()">
-    <h1>Team Win Probability Calculator</h1>
+  <h1>Team Win Probability Calculator</h1>
 
-    <div class="global-settings">
-        <div>
-            <label for="yourTeamRating">Your Team Rating:</label><br>
-            <input type="number" id="yourTeamRating" step="0.1" placeholder="e.g., 85">
-        </div>
-        <div>
-            <label for="homeFieldAdv">Home Field Advantage:</label><br>
-            <input type="number" id="homeFieldAdv" step="0.1" placeholder="e.g., 2.5">
-        </div>
-        <div style="align-self: flex-end;">
-            <button onclick="updatePointSpreads()">Update Point Spreads</button>
-        </div>
+  <div class="global-settings">
+    <div>
+      <label for="yourTeamRating">Your Team Rating:</label><br>
+      <input type="number" id="yourTeamRating" step="0.1" placeholder="e.g., 85">
     </div>
-
-    <label for="numGames">Number of Games:</label>
-    <select id="numGames" onchange="generateInputs()">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-        <option value="6">6</option>
-        <option value="7">7</option>
-        <option value="8">8</option>
-        <option value="9">9</option>
-        <option value="10">10</option>
-        <option value="11">11</option>
-        <option value="12">12</option>
-        <option value="13">13</option>
-        <option value="14">14</option>
-        <option value="15" selected>15</option>
-        <option value="16">16</option>
-        <option value="17">17</option>
-        <option value="18">18</option>
-        <option value="19">19</option>
-        <option value="20">20</option>
-        <option value="21">21</option>
-        <option value="22">22</option>
-        <option value="23">23</option>
-        <option value="24">24</option>
-        <option value="25">25</option>
-    </select>
-
-    <div id="gameInputs"></div>
-
-    <div class="controls">
-        <button onclick="calculateProbabilities()">Calculate</button>
-        <button onclick="startOver()">Start Over</button>
-        <button onclick="clearProbabilities()">Clear Probabilities</button>
+    <div>
+      <label for="homeFieldAdv">Home Field Advantage:</label><br>
+      <input type="number" id="homeFieldAdv" step="0.1" placeholder="e.g., 2.5">
     </div>
+    <div style="align-self:flex-end;">
+      <button onclick="updatePointSpreads()">Update Point Spreads</button>
+    </div>
+  </div>
 
-    <canvas id="histogram"></canvas>
+  <label for="numGames">Number of Games:</label>
+  <select id="numGames" onchange="generateInputs()">
+    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
+    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
+    <option value="7">7</option><option value="8">8</option><option value="9">9</option>
+    <option value="10">10</option><option value="11">11</option><option value="12">12</option>
+    <option value="13">13</option><option value="14">14</option>
+    <option value="15" selected>15</option>
+    <option value="16">16</option><option value="17">17</option><option value="18">18</option>
+    <option value="19">19</option><option value="20">20</option><option value="21">21</option>
+    <option value="22">22</option><option value="23">23</option><option value="24">24</option>
+    <option value="25">25</option>
+  </select>
 
-    <h2>Win Probability Report</h2>
-    <pre id="reportOutput"></pre>
+  <div id="gameInputs"></div>
 
-    <button onclick="copyToClipboard()">Copy Report to Clipboard</button>
+  <div class="controls">
+    <button onclick="calculateProbabilities()">Calculate</button>
+    <button onclick="startOver()">Start Over</button>
+    <button onclick="clearProbabilities()">Clear Probabilities</button>
+  </div>
+
+  <canvas id="histogram"></canvas>
+
+  <h2>Win Probability Report</h2>
+  <pre id="reportOutput"></pre>
+
+  <button onclick="copyToClipboard()">Copy Report to Clipboard</button>
 </body>
 </html>
