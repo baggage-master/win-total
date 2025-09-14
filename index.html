@@ -6,7 +6,7 @@
   <title>Team Win Probability Calculator</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- cache-bust to force the new JS to load -->
-  <script src="script.js?v=4" defer></script>
+  <script src="script.js?v=5" defer></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     h1 { margin-bottom: 8px; }
@@ -20,15 +20,30 @@
     .controls { margin: 12px 0; display: flex; gap: 8px; flex-wrap: wrap; }
     .global-settings, .model-settings { margin: 12px 0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
     .section-title { margin: 16px 0 4px; font-size: 1.05rem; font-weight: bold; }
+    #quickstart { margin:12px 0; padding:12px; border:1px solid #ddd; border-radius:8px; }
+    #quickstart ul { margin:8px 0 8px 20px; }
   </style>
 </head>
 <body onload="generateInputs()">
   <h1>Team Win Probability Calculator</h1>
 
+  <!-- Quick Start (concise) -->
+  <div id="quickstart">
+    <strong>Quick Start</strong>
+    <ul>
+      <li>The report always uses the current <em>Probability</em> values.</li>
+      <li><b>Option 1:</b> Type probabilities directly. For played games (UTSA, Utah State, Notre Dame) set 1.00 (win) or 0.00 (loss).</li>
+      <li><b>Option 2:</b> Enter point spreads (Spread = Opp − Texas A&amp;M; negative favors A&amp;M). Choose a model (Normal σ=13.5 or Logistic b=0.23), then click <i>Update Probabilities from Spreads</i>.</li>
+      <li><b>Option 3:</b> Use ratings. Set Texas A&amp;M Rating &amp; HFA; fill opponent ratings (prefilled from <em>Sagarin PREDICTOR</em> where available). Click <i>Update Spreads from Ratings</i> → <i>Update Probabilities from Spreads</i>.</li>
+      <li><b>Calculate</b> builds the distribution from the current probabilities. <b>Clear Probabilities</b> sets all to 0.50. <b>Start Over</b> restores defaults.</li>
+    </ul>
+    <a href="#details">Full instructions ↓</a>
+  </div>
+
   <div class="section-title">Global Ratings</div>
   <div class="global-settings">
     <div>
-      <label for="yourTeamRating">Your Team Rating:</label><br>
+      <label for="yourTeamRating">Texas A&amp;M Rating:</label><br>
       <input type="number" id="yourTeamRating" step="0.1" placeholder="e.g., 85">
     </div>
     <div>
@@ -92,8 +107,74 @@
 
   <button onclick="copyToClipboard()">Copy Report to Clipboard</button>
 
+  <!-- Full, detailed instructions -->
+  <section id="details" style="margin-top:32px;">
+    <h2>How to use this page</h2>
+    <p>You have three ways to drive the final report. <strong>The report always uses the current “Probability” values</strong> for each game—everything else (spreads/ratings) is just a helper to fill those in.</p>
+
+    <h3>Option 1 — Enter probabilities directly (fastest)</h3>
+    <ol>
+      <li>Confirm the schedule and <strong>Home/Away/Neutral</strong> for each game.</li>
+      <li>For games already played (<em>UTSA, Utah State, Notre Dame</em>), set <strong>Probability</strong> to <strong>1.00</strong> for a win or <strong>0.00</strong> for a loss. (You don’t need spreads.)</li>
+      <li>For upcoming games, type your own <strong>Probability</strong> (0–1) based on your opinion, power ratings, injury news, etc.</li>
+      <li>Click <strong>Calculate</strong> to see the win-distribution and text report.</li>
+    </ol>
+
+    <h3>Option 2 — Enter point spreads, then convert to probabilities</h3>
+    <ol>
+      <li>In <strong>Spread → Probability Model</strong>, choose a model:
+        <ul>
+          <li><strong>Normal (σ)</strong> (default σ ≈ <strong>13.5</strong> points is common for football margins), or</li>
+          <li><strong>Logistic (b)</strong> (default <strong>0.23</strong>).</li>
+        </ul>
+      </li>
+      <li>For each <strong>upcoming</strong> game, enter the <strong>Spread</strong> using this sign convention:<br>
+        <em>Spread = OpponentAdjusted − Texas A&amp;M Adjusted</em><br>
+        Positive spread (<strong>+X</strong>) ⇒ opponent favored. Negative spread (<strong>−X</strong>) ⇒ Texas A&amp;M favored.</li>
+      <li>(For already played games, leave the spread blank and set Probability to 1.00 or 0.00.)</li>
+      <li>Click <strong>Update Probabilities from Spreads</strong> to fill the <strong>Probability</strong> boxes via the chosen model.</li>
+      <li>Review/edit any probabilities you want, then click <strong>Calculate</strong>.</li>
+    </ol>
+
+    <h3>Option 3 — Use ratings (e.g., Sagarin PREDICTOR) to create spreads, then probabilities</h3>
+    <ol>
+      <li>In <strong>Global Ratings</strong>, enter (or use the prefilled):
+        <ul>
+          <li><strong>Texas A&amp;M Rating</strong></li>
+          <li><strong>Home Field Advantage (HFA)</strong></li>
+        </ul>
+        <em>HFA is added to the home team only; neutral = no HFA.</em>
+      </li>
+      <li>For each opponent, enter its <strong>Team Rating</strong>. <em>Several are prefilled from <strong>Sagarin PREDICTOR</strong>.</em></li>
+      <li>Ensure <strong>Home/Away/Neutral</strong> is correct for each game.</li>
+      <li>Click <strong>Update Spreads from Ratings</strong>.<br>
+        This computes:<br>
+        If <strong>Home</strong>: Texas A&amp;M Adjusted = A&amp;M Rating + HFA<br>
+        If <strong>Away</strong>: Opponent Adjusted = Opponent Rating + HFA<br>
+        If <strong>Neutral</strong>: no HFA added<br>
+        Then <em>Spread = OpponentAdjusted − Texas A&amp;M Adjusted</em>.
+      </li>
+      <li>Choose a model (Normal σ or Logistic b) and click <strong>Update Probabilities from Spreads</strong>.</li>
+      <li>Review/edit any probabilities, then click <strong>Calculate</strong>.</li>
+    </ol>
+
+    <h3>Notes &amp; tips</h3>
+    <ul>
+      <li><strong>Played games</strong>: Spreads aren’t needed. Just set <strong>Probability = 1.00</strong> or <strong>0.00</strong> to lock in the result.</li>
+      <li><strong>Skipping rules</strong>: If a rating or spread is missing, that game is <strong>skipped</strong> by the conversion buttons (existing Probability remains unchanged).</li>
+      <li><strong>Final authority</strong>: The <strong>Probability</strong> inputs are the truth. <strong>Calculate</strong> always uses whatever is currently in those boxes.</li>
+      <li><strong>Reset buttons</strong>:
+        <ul>
+          <li><strong>Clear Probabilities</strong> sets all probabilities to <strong>0.50</strong> (does not change ratings/spreads).</li>
+          <li><strong>Start Over</strong> restores the default schedule/locations and the current prefilled ratings; probabilities return to the page defaults (first three = 1.00, others = 0.50, blanks = 0.00).</li>
+        </ul>
+      </li>
+      <li><strong>Sanity check</strong>: +7 usually implies ~70% win chance with Normal(σ≈13.5); negative spreads favor Texas A&amp;M.</li>
+    </ul>
+  </section>
+
   <script>
-    // simple show/hide of model params
+    // show/hide model params
     document.addEventListener('DOMContentLoaded', () => {
       const model = document.getElementById('modelType');
       const sigmaWrap = document.getElementById('sigmaWrap');
