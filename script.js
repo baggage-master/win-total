@@ -103,14 +103,14 @@ function generateInputs() {
 }
 
 // -------- Ratings → Spread (per game) --------
-// HFA goes to the HOME team only. Spread = OppAdj - YourAdj (positive = opponent favored)
+// HFA to HOME team only. Spread = OppAdj - A&M Adj (positive = opponent favored)
 function updateSpreadsFromRatings() {
   const numGames = parseInt(document.getElementById('numGames').value, 10);
   const your = parseFloat(document.getElementById('yourTeamRating').value);
   const hfa  = parseFloat(document.getElementById('homeFieldAdv').value);
 
   if (isNaN(your) || isNaN(hfa)) {
-    alert('Please enter BOTH "Your Team Rating" and "Home Field Advantage" first.');
+    alert('Please enter BOTH "Texas A&M Rating" and "Home Field Advantage" first.');
     return;
   }
 
@@ -150,7 +150,7 @@ function updateProbabilitiesFromSpreads() {
     let p;
     if (model === 'normal') {
       const z = spread / sigma;
-      p = 1 - standardNormalCDF(z); // your team wins when margin < 0
+      p = 1 - standardNormalCDF(z); // A&M wins when margin < 0
     } else {
       p = 1 / (1 + Math.exp(beta * spread));
     }
