@@ -5,22 +5,25 @@ let chartInstance = null;
  *  (Update these numbers as needed)
  *  =============================== */
 const PREPOP = {
-  homeFieldAdv: 5.54,
-  yourTeamRating: 87.01,
+  homeFieldAdv: 4.99,
+  yourTeamRating: 86.73,
   teamRatings: {
-    // Only teams you provided are prefilled. Others remain blank.
-    "Auburn": 82.53,
-    "Mississippi State": 73.11,
-    "Florida": 83.83,
-    "Arkansas": 80.45,
-    "LSU": 86.73,
-    "Missouri": 82.86,
-    "South Carolina": 80.05,
-    "Samford": 46.75,
-    "Texas": 88.36
-    // UTSA, Utah State, Notre Dame not provided -> left blank
+    // Updated opponent ratings
+    "Mississippi State": 74.95,
+    "Florida": 82.70,
+    "Arkansas": 77.60,
+    "LSU": 86.81,
+    "Missouri": 82.64,
+    "South Carolina": 80.79,
+    "Samford": 42.43,
+    "Texas": 88.17
+    // UTSA, Utah State, Notre Dame, Auburn omitted (played teams don't need spreads)
   }
 };
+
+// Indices for played games in our 12-game schedule (0-based):
+// 0: UTSA, 1: Utah State, 2: Notre Dame, 3: Auburn
+const PLAYED_INDICES = new Set([0, 1, 2, 3]);
 
 // -------- Build Inputs (with Team Rating + Spread input) --------
 function generateInputs() {
@@ -50,8 +53,16 @@ function generateInputs() {
   const opponents = opponents12.concat(Array(extraCount).fill(""));
   const locations = locations12.concat(Array(extraCount).fill("neutral"));
 
-  // Prob defaults: first 3 = 1.0; rest of first 12 = 0.5; last 3 blanks = 0.0
-  const defaultProbabilities = opponents.map((_, idx) => (idx < 3 ? 1.0 : (idx < 12 ? 0.5 : 0.0)));
+  // Default probabilities:
+  // - Played games (UTSA, Utah State, Notre Dame, Auburn) => 1.0 by default here (A&M wins noted)
+  //   If any were losses in the future, you can change here or edit in the UI.
+  // - Remaining among first 12 => 0.5
+  // - Last 3 blanks => 0.0
+  const defaultProbabilities = opponents.map((_, idx) => {
+    if (PLAYED_INDICES.has(idx)) return 1.0;      // preset wins
+    if (idx < 12) return 0.5;
+    return 0.0;
+  });
 
   for (let i = 1; i <= numGames; i++) {
     const idx = i - 1;
@@ -94,7 +105,7 @@ function generateInputs() {
       </div>`;
     gameInputs.insertAdjacentHTML('beforeend', rowHtml);
 
-    // After inserting, prefill opponent rating if we have it (and only if empty)
+    // Prefill opponent rating if provided (and only if empty)
     if (opponentName && PREPOP.teamRatings[opponentName] != null) {
       const oppInput = document.getElementById(`oppRating${i}`);
       if (oppInput && !oppInput.value) oppInput.value = PREPOP.teamRatings[opponentName].toFixed(2);
@@ -216,7 +227,7 @@ function startOver() {
   canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);
   if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
 
-  // reset globals/model to PREPOP defaults (so refresh is easy each week)
+  // Reset globals/model to PREPOP defaults (weekly refresh)
   document.getElementById('yourTeamRating').value = PREPOP.yourTeamRating ?? '';
   document.getElementById('homeFieldAdv').value  = PREPOP.homeFieldAdv   ?? '';
   document.getElementById('modelType').value = 'normal';
