@@ -5,25 +5,24 @@ let chartInstance = null;
  *  (Update these numbers as needed)
  *  =============================== */
 const PREPOP = {
-  homeFieldAdv: 4.99,
-  yourTeamRating: 86.73,
+  homeFieldAdv: 4.67,
+  yourTeamRating: 87.07,
   teamRatings: {
-    // Updated opponent ratings
-    "Mississippi State": 74.95,
-    "Florida": 82.70,
-    "Arkansas": 77.60,
-    "LSU": 86.81,
-    "Missouri": 82.64,
-    "South Carolina": 80.79,
-    "Samford": 42.43,
-    "Texas": 88.17
-    // UTSA, Utah State, Notre Dame, Auburn omitted (played teams don't need spreads)
+    // Updated opponent ratings (remaining games)
+    "Florida": 83.75,
+    "Arkansas": 77.31,
+    "LSU": 87.07,
+    "Missouri": 82.34,
+    "South Carolina": 80.40,
+    "Samford": 41.31,
+    "Texas": 86.98
+    // Played teams omitted: UTSA, Utah State, Notre Dame, Auburn, Mississippi State
   }
 };
 
 // Indices for played games in our 12-game schedule (0-based):
-// 0: UTSA, 1: Utah State, 2: Notre Dame, 3: Auburn
-const PLAYED_INDICES = new Set([0, 1, 2, 3]);
+// 0: UTSA, 1: Utah State, 2: Notre Dame, 3: Auburn, 4: Mississippi State
+const PLAYED_INDICES = new Set([0, 1, 2, 3, 4]);
 
 // -------- Build Inputs (with Team Rating + Spread input) --------
 function generateInputs() {
@@ -54,12 +53,11 @@ function generateInputs() {
   const locations = locations12.concat(Array(extraCount).fill("neutral"));
 
   // Default probabilities:
-  // - Played games (UTSA, Utah State, Notre Dame, Auburn) => 1.0 by default here (A&M wins noted)
-  //   If any were losses in the future, you can change here or edit in the UI.
+  // - Played games (UTSA, Utah State, Notre Dame, Auburn, Mississippi State) => 1.0 by default here
   // - Remaining among first 12 => 0.5
   // - Last 3 blanks => 0.0
   const defaultProbabilities = opponents.map((_, idx) => {
-    if (PLAYED_INDICES.has(idx)) return 1.0;      // preset wins
+    if (PLAYED_INDICES.has(idx)) return 1.0;      // preset wins for played games
     if (idx < 12) return 0.5;
     return 0.0;
   });
@@ -128,14 +126,14 @@ function updateSpreadsFromRatings() {
   for (let i = 1; i <= numGames; i++) {
     const opp = parseFloat(document.getElementById(`oppRating${i}`).value);
     const locEl = document.querySelector(`input[name="loc${i}"]:checked`);
-    const loc = locEl ? locEl.value : 'neutral';
+    theLoc = locEl ? locEl.value : 'neutral';
     const spreadEl = document.getElementById(`spread${i}`);
 
     if (isNaN(opp)) continue; // skip games without an opponent rating
 
     let yourAdj = your, oppAdj = opp;
-    if (loc === 'home') yourAdj += hfa;
-    else if (loc === 'away') oppAdj += hfa;
+    if (theLoc === 'home') yourAdj += hfa;
+    else if (theLoc === 'away') oppAdj += hfa;
 
     const spread = oppAdj - yourAdj;
     spreadEl.value = spread.toFixed(1);
