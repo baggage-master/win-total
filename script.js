@@ -5,24 +5,23 @@ let chartInstance = null;
  *  (Update these numbers as needed)
  *  =============================== */
 const PREPOP = {
-  homeFieldAdv: 4.67,
-  yourTeamRating: 87.07,
+  homeFieldAdv: 4.71,
+  yourTeamRating: 87.94,
   teamRatings: {
     // Updated opponent ratings (remaining games)
-    "Florida": 83.75,
-    "Arkansas": 77.31,
-    "LSU": 87.07,
-    "Missouri": 82.34,
-    "South Carolina": 80.40,
-    "Samford": 41.31,
-    "Texas": 86.98
-    // Played teams omitted: UTSA, Utah State, Notre Dame, Auburn, Mississippi State
+    "Arkansas": 77.96,
+    "LSU": 86.55,
+    "Missouri": 82.89,
+    "South Carolina": 80.52,
+    "Samford": 41.17,
+    "Texas": 87.96
+    // Played teams omitted: UTSA, Utah State, Notre Dame, Auburn, Mississippi State, Florida
   }
 };
 
 // Indices for played games in our 12-game schedule (0-based):
-// 0: UTSA, 1: Utah State, 2: Notre Dame, 3: Auburn, 4: Mississippi State
-const PLAYED_INDICES = new Set([0, 1, 2, 3, 4]);
+// 0: UTSA, 1: Utah State, 2: Notre Dame, 3: Auburn, 4: Mississippi State, 5: Florida
+const PLAYED_INDICES = new Set([0, 1, 2, 3, 4, 5]);
 
 // -------- Build Inputs (with Team Rating + Spread input) --------
 function generateInputs() {
@@ -53,7 +52,7 @@ function generateInputs() {
   const locations = locations12.concat(Array(extraCount).fill("neutral"));
 
   // Default probabilities:
-  // - Played games (UTSA, Utah State, Notre Dame, Auburn, Mississippi State) => 1.0 by default here
+  // - Played games => 1.0
   // - Remaining among first 12 => 0.5
   // - Last 3 blanks => 0.0
   const defaultProbabilities = opponents.map((_, idx) => {
@@ -126,14 +125,14 @@ function updateSpreadsFromRatings() {
   for (let i = 1; i <= numGames; i++) {
     const opp = parseFloat(document.getElementById(`oppRating${i}`).value);
     const locEl = document.querySelector(`input[name="loc${i}"]:checked`);
-    theLoc = locEl ? locEl.value : 'neutral';
+    const loc = locEl ? locEl.value : 'neutral';
     const spreadEl = document.getElementById(`spread${i}`);
 
     if (isNaN(opp)) continue; // skip games without an opponent rating
 
     let yourAdj = your, oppAdj = opp;
-    if (theLoc === 'home') yourAdj += hfa;
-    else if (theLoc === 'away') oppAdj += hfa;
+    if (loc === 'home') yourAdj += hfa;
+    else if (loc === 'away') oppAdj += hfa;
 
     const spread = oppAdj - yourAdj;
     spreadEl.value = spread.toFixed(1);
