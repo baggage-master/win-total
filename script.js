@@ -5,17 +5,23 @@ let chartInstance = null;
  *  (Update these numbers as needed)
  *  =============================== */
 const PREPOP = {
-  homeFieldAdv: 4.71,
+  homeFieldAdv: 4.16,
+  // You didn't provide a new A&M number this week; keeping last week's.
   yourTeamRating: 87.94,
   teamRatings: {
-    // Updated opponent ratings (remaining games)
-    "Arkansas": 77.96,
-    "LSU": 86.55,
-    "Missouri": 82.89,
-    "South Carolina": 80.52,
-    "Samford": 41.17,
-    "Texas": 87.96
-    // Played teams omitted: UTSA, Utah State, Notre Dame, Auburn, Mississippi State, Florida
+    // Updated opponent ratings (all teams)
+    "UTSA": 67.02,
+    "Utah State": 63.17,
+    "Notre Dame": 91.64,
+    "Auburn": 81.66,
+    "Mississippi State": 74.73,
+    "Florida": 82.17,
+    "Arkansas": 78.55,
+    "LSU": 85.86,
+    "Missouri": 83.55,
+    "South Carolina": 79.18,
+    "Samford": 39.99,
+    "Texas": 87.21
   }
 };
 
