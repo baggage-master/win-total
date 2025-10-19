@@ -6,7 +6,7 @@
   <title>Team Win Probability Calculator</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- cache-bust to force the new JS to load -->
-  <script src="script.js?v=9" defer></script>
+  <script src="script.js?v=10" defer></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     h1 { margin-bottom: 8px; }
@@ -32,7 +32,7 @@
     <strong>Quick Start</strong>
     <ul>
       <li>The report always uses the current <em>Probability</em> values.</li>
-      <li><b>Option 1:</b> Type probabilities directly. For played games (UTSA, Utah State, Notre Dame, <b>Auburn</b>, <b>Mississippi State</b>, <b>Florida</b>) set 1.00 (win) or 0.00 (loss). <em>Auburn, Mississippi State, and Florida are preset to 1.00.</em></li>
+      <li><b>Option 1:</b> Type probabilities directly. For played games (UTSA, Utah State, Notre Dame, <b>Auburn</b>, <b>Mississippi State</b>, <b>Florida</b>, <b>Arkansas</b>) set 1.00 (win) or 0.00 (loss). <em>Auburn, Mississippi State, Florida, and Arkansas are preset to 1.00.</em></li>
       <li><b>Option 2:</b> Enter point spreads (Spread = Opp − Texas A&amp;M; negative favors A&amp;M). Choose a model (Normal σ=13.5 or Logistic b=0.23), then click <i>Update Probabilities from Spreads</i>.</li>
       <li><b>Option 3:</b> Use ratings. Set Texas A&amp;M Rating &amp; HFA; fill opponent ratings (prefilled from <em>Sagarin PREDICTOR</em> where available). Click <i>Update Spreads from Ratings</i> → <i>Update Probabilities from Spreads</i>.</li>
       <li><b>Calculate</b> builds the distribution from the current probabilities. <b>Clear Probabilities</b> sets all to 0.50. <b>Start Over</b> restores defaults.</li>
@@ -115,7 +115,7 @@
     <h3>Option 1 — Enter probabilities directly (fastest)</h3>
     <ol>
       <li>Confirm the schedule and <strong>Home/Away/Neutral</strong> for each game.</li>
-      <li>For games already played (<em>UTSA, Utah State, Notre Dame, Auburn, Mississippi State, Florida</em>), set <strong>Probability</strong> to <strong>1.00</strong> for a win or <strong>0.00</strong> for a loss. (You don’t need spreads.)</li>
+      <li>For games already played (<em>UTSA, Utah State, Notre Dame, Auburn, Mississippi State, Florida, Arkansas</em>), set <strong>Probability</strong> to <strong>1.00</strong> for a win or <strong>0.00</strong> for a loss. (You don’t need spreads.)</li>
       <li>For upcoming games, type your own <strong>Probability</strong> (0–1) based on your opinion, power ratings, injury news, etc.</li>
       <li>Click <strong>Calculate</strong> to see the win-distribution and text report.</li>
     </ol>
@@ -157,34 +157,6 @@
       <li>Choose a model (Normal σ or Logistic b) and click <strong>Update Probabilities from Spreads</strong>.</li>
       <li>Review/edit any probabilities, then click <strong>Calculate</strong>.</li>
     </ol>
-
-    <h3>Notes &amp; tips</h3>
-    <ul>
-      <li><strong>Played games</strong>: Spreads aren’t needed. Just set <strong>Probability = 1.00</strong> or <strong>0.00</strong> to lock in the result.</li>
-      <li><strong>Skipping rules</strong>: If a rating or spread is missing, that game is <strong>skipped</strong> by the conversion buttons (existing Probability remains unchanged).</li>
-      <li><strong>Final authority</strong>: The <strong>Probability</strong> inputs are the truth. <strong>Calculate</strong> always uses whatever is currently in those boxes.</li>
-      <li><strong>Reset buttons</strong>:
-        <ul>
-          <li><strong>Clear Probabilities</strong> sets all probabilities to <strong>0.50</strong> (does not change ratings/spreads).</li>
-          <li><strong>Start Over</strong> restores the default schedule/locations and the current prefilled ratings; probabilities return to defaults (played games preset to their outcomes, others 0.50, blanks 0.00).</li>
-        </ul>
-      </li>
-      <li><strong>Sanity check</strong>: +7 usually implies ~70% win chance with Normal(σ≈13.5); negative spreads favor Texas A&amp;M.</li>
-    </ul>
   </section>
-
-  <script>
-    // show/hide model params
-    document.addEventListener('DOMContentLoaded', () => {
-      const model = document.getElementById('modelType');
-      const sigmaWrap = document.getElementById('sigmaWrap');
-      const betaWrap  = document.getElementById('betaWrap');
-      const toggle = () => {
-        if (model.value === 'normal') { sigmaWrap.style.display='block'; betaWrap.style.display='none'; }
-        else { sigmaWrap.style.display='none'; betaWrap.style.display='block'; }
-      };
-      model.addEventListener('change', toggle); toggle();
-    });
-  </script>
 </body>
 </html>
