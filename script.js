@@ -5,28 +5,29 @@ let chartInstance = null;
  *  (Update these numbers as needed)
  *  =============================== */
 const PREPOP = {
-  homeFieldAdv: 4.16,
-  yourTeamRating: 87.24,  // updated A&M rating
+  homeFieldAdv: 4.14,
+  yourTeamRating: 88.99,
   teamRatings: {
-    "UTSA": 67.02,
-    "Utah State": 63.17,
-    "Notre Dame": 91.64,
-    "Auburn": 81.66,
-    "Mississippi State": 74.73,
-    "Florida": 82.17,
-    "Arkansas": 78.55,
-    "LSU": 85.86,
-    "Missouri": 83.55,
-    "South Carolina": 79.18,
-    "Samford": 39.99,
-    "Texas": 87.21
+    // Updated opponent ratings (all teams)
+    "UTSA": 66.86,
+    "Utah State": 60.58,
+    "Notre Dame": 91.43,
+    "Auburn": 82.26,
+    "Mississippi State": 75.85,
+    "Florida": 82.22,
+    "Arkansas": 78.44,
+    "LSU": 84.30,
+    "Missouri": 83.12,
+    "South Carolina": 79.70,
+    "Samford": 37.26,
+    "Texas": 86.78
   }
 };
 
 // Played wins in our 12-game schedule (0-based):
-// 0: UTSA, 1: Utah State, 2: Notre Dame, 3: Auburn, 4: Mississippi State,
-// 5: Florida, 6: Arkansas
-const PLAYED_INDICES = new Set([0, 1, 2, 3, 4, 5, 6]);
+// 0: UTSA, 1: Utah State, 2: Notre Dame, 3: Auburn,
+// 4: Mississippi State, 5: Florida, 6: Arkansas, 7: LSU
+const PLAYED_INDICES = new Set([0, 1, 2, 3, 4, 5, 6, 7]);
 
 // -------- Build Inputs (with Team Rating + Spread input) --------
 function generateInputs() {
@@ -52,7 +53,7 @@ function generateInputs() {
   const locations = locations12.concat(Array(extraCount).fill("neutral"));
 
   const defaultProbabilities = opponents.map((_, idx) => {
-    if (PLAYED_INDICES.has(idx)) return 1.0;   // A&M wins preset to 1
+    if (PLAYED_INDICES.has(idx)) return 1.0;   // preset to 1 for played wins
     if (idx < 12) return 0.5;
     return 0.0;
   });
