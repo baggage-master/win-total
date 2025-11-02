@@ -5,10 +5,10 @@ let chartInstance = null;
  *  (Update these numbers as needed)
  *  =============================== */
 const PREPOP = {
-  homeFieldAdv: 4.14,
-  yourTeamRating: 88.99,
+  homeFieldAdv: 3.76,
+  yourTeamRating: 88.85,
   teamRatings: {
-    // Updated opponent ratings (all teams)
+    // All opponents (new numbers for final 4; others kept from prior week)
     "UTSA": 66.86,
     "Utah State": 60.58,
     "Notre Dame": 91.43,
@@ -17,10 +17,10 @@ const PREPOP = {
     "Florida": 82.22,
     "Arkansas": 78.44,
     "LSU": 84.30,
-    "Missouri": 83.12,
-    "South Carolina": 79.70,
-    "Samford": 37.26,
-    "Texas": 86.78
+    "Missouri": 82.89,         // updated
+    "South Carolina": 79.42,   // updated
+    "Samford": 37.43,          // updated
+    "Texas": 87.12             // updated
   }
 };
 
