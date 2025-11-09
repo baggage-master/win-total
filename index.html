@@ -5,23 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Team Win Probability Calculator</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- cache-bust to force the new JS to load -->
-  <script src="script.js?v=12" defer></script>
+  <!-- cache-bust so the latest JS loads -->
+  <script src="script.js?v=13" defer></script>
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     h1 { margin-bottom: 8px; }
     label { font-weight: bold; }
     input[type="text"] { width: 220px; margin-right: 10px; }
-    input[type="number"] { width: 110px; }
+    input[type="number"] { width: 120px; }
     #histogram { max-width: 500px; max-height: 500px; width: 100%; height: auto; margin: 20px auto; display: block; }
-    #gameInputs > div { margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #ddd; }
+    #gameInputs > div { margin-bottom: 14px; padding-bottom: 12px; border-bottom: 1px solid #ddd; }
     .row-top { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-    .loc-group label { font-weight: normal; }
+    .loc-group label, .result-group label { font-weight: normal; }
     .controls { margin: 12px 0; display: flex; gap: 8px; flex-wrap: wrap; }
     .global-settings, .model-settings { margin: 12px 0; display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
     .section-title { margin: 16px 0 4px; font-size: 1.05rem; font-weight: bold; }
     #quickstart { margin:12px 0; padding:12px; border:1px solid #ddd; border-radius:8px; }
     #quickstart ul { margin:8px 0 8px 20px; }
+    .dimmed { opacity: 0.6; }
   </style>
 </head>
 <body onload="generateInputs()">
@@ -32,23 +33,44 @@
     <strong>Quick Start</strong>
     <ul>
       <li>The report always uses the current <em>Probability</em> values.</li>
-      <li><b>Option 1:</b> Type probabilities directly. For played games (UTSA, Utah State, Notre Dame, <b>Auburn</b>, <b>Mississippi State</b>, <b>Florida</b>, <b>Arkansas</b>, <b>LSU</b>) set 1.00 (win) or 0.00 (loss). <em>Auburn, Mississippi State, Florida, Arkansas, and LSU are preset to 1.00.</em></li>
-      <li><b>Option 2:</b> Enter point spreads (Spread = Opp − Texas A&amp;M; negative favors A&amp;M). Choose a model (Normal σ=13.5 or Logistic b=0.23), then click <i>Update Probabilities from Spreads</i>.</li>
-      <li><b>Option 3:</b> Use ratings. Set Texas A&amp;M Rating &amp; HFA; fill opponent ratings (prefilled from <em>Sagarin PREDICTOR</em> where available). Click <i>Update Spreads from Ratings</i> → <i>Update Probabilities from Spreads</i>.</li>
-      <li><b>Calculate</b> builds the distribution from the current probabilities. <b>Clear Probabilities</b> sets all to 0.50. <b>Start Over</b> restores defaults.</li>
+      <li><b>Option 1:</b> Set each game’s <em>Result</em> (Won/Lost/Not played). Won=1.00, Lost=0.00. Not played can use spreads/ratings or manual probabilities.</li>
+      <li><b>Option 2:</b> Enter point spreads (Spread = Opp − Texas A&amp;M; negative favors A&amp;M) and click <i>Update Probabilities from Spreads</i>.</li>
+      <li><b>Option 3:</b> Apply a model (RATING/PREDICTOR/GM/RECENT/STRONG RECENT/FPI) to prefill ratings, then click <i>Update Spreads from Ratings</i> → <i>Update Probabilities from Spreads</i>.</li>
+      <li><b>Calculate</b> builds the distribution. <b>Clear Probabilities</b> resets only <em>Not played</em> games to 0.50. <b>Start Over</b> restores defaults.</li>
     </ul>
-    <a href="#details">Full instructions ↓</a>
+  </div>
+
+  <!-- Model selector -->
+  <div class="section-title">Rating Model</div>
+  <div class="model-settings">
+    <div>
+      <label for="ratingModel">Choose model:</label><br>
+      <select id="ratingModel">
+        <option value="RATING" selected>RATING</option>
+        <option value="PREDICTOR">PREDICTOR</option>
+        <option value="GOLDEN_MEAN">GOLDEN MEAN</option>
+        <option value="RECENT">RECENT</option>
+        <option value="STRONG_RECENT">STRONG RECENT</option>
+        <option value="FPI">FPI</option>
+      </select>
+    </div>
+    <div style="align-self:flex-end;">
+      <label><input type="checkbox" id="overwriteEdits" checked> Overwrite my edits</label>
+    </div>
+    <div style="align-self:flex-end;">
+      <button onclick="applySelectedModel()">Apply Model</button>
+    </div>
   </div>
 
   <div class="section-title">Global Ratings</div>
   <div class="global-settings">
     <div>
       <label for="yourTeamRating">Texas A&amp;M Rating:</label><br>
-      <input type="number" id="yourTeamRating" step="0.1" placeholder="e.g., 85">
+      <input type="number" id="yourTeamRating" step="0.01" placeholder="e.g., 85">
     </div>
     <div>
       <label for="homeFieldAdv">Home Field Advantage:</label><br>
-      <input type="number" id="homeFieldAdv" step="0.1" placeholder="e.g., 2.5">
+      <input type="number" id="homeFieldAdv" step="0.01" placeholder="e.g., 2.5">
     </div>
     <div style="align-self:flex-end;">
       <button onclick="updateSpreadsFromRatings()">Update Spreads from Ratings</button>
@@ -79,15 +101,19 @@
 
   <label for="numGames">Number of Games:</label>
   <select id="numGames" onchange="generateInputs()">
-    <option value="1">1</option><option value="2">2</option><option value="3">3</option>
-    <option value="4">4</option><option value="5">5</option><option value="6">6</option>
-    <option value="7">7</option><option value="8">8</option><option value="9">9</option>
-    <option value="10">10</option><option value="11">11</option><option value="12">12</option>
-    <option value="13">13</option><option value="14">14</option>
+    <option value="12">12</option>
+    <option value="13">13</option>
+    <option value="14">14</option>
     <option value="15" selected>15</option>
-    <option value="16">16</option><option value="17">17</option><option value="18">18</option>
-    <option value="19">19</option><option value="20">20</option><option value="21">21</option>
-    <option value="22">22</option><option value="23">23</option><option value="24">24</option>
+    <option value="16">16</option>
+    <option value="17">17</option>
+    <option value="18">18</option>
+    <option value="19">19</option>
+    <option value="20">20</option>
+    <option value="21">21</option>
+    <option value="22">22</option>
+    <option value="23">23</option>
+    <option value="24">24</option>
     <option value="25">25</option>
   </select>
 
@@ -107,9 +133,18 @@
 
   <button onclick="copyToClipboard()">Copy Report to Clipboard</button>
 
-  <!-- Full, detailed instructions (unchanged) -->
-  <section id="details" style="margin-top:32px;">
-    <!-- …existing detailed instructions… -->
-  </section>
+  <script>
+    // Show/hide model params
+    document.addEventListener('DOMContentLoaded', () => {
+      const model = document.getElementById('modelType');
+      const sigmaWrap = document.getElementById('sigmaWrap');
+      const betaWrap  = document.getElementById('betaWrap');
+      const toggle = () => {
+        if (model.value === 'normal') { sigmaWrap.style.display='block'; betaWrap.style.display='none'; }
+        else { sigmaWrap.style.display='none'; betaWrap.style.display='block'; }
+      };
+      model.addEventListener('change', toggle); toggle();
+    });
+  </script>
 </body>
 </html>
